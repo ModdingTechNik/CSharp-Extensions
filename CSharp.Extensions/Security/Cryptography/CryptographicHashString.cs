@@ -37,6 +37,31 @@ public sealed class CryptographicHashString
         _separator = separator;
     }
 
+    private bool Equals(CryptographicHashString other)
+    {
+        return _base64Hash == other._base64Hash && _base64Salt == other._base64Salt && _separator == other._separator;
+    }
+
+    public override bool Equals(object? obj)
+    {
+        return ReferenceEquals(this, obj) || obj is CryptographicHashString other && Equals(other);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(_base64Hash, _base64Salt, _separator);
+    }
+
+    public static bool operator ==(CryptographicHashString? left, CryptographicHashString? right)
+    {
+        return Equals(left, right);
+    }
+
+    public static bool operator !=(CryptographicHashString? left, CryptographicHashString? right)
+    {
+        return !Equals(left, right);
+    }
+
     public override string ToString()
     {
         StringBuilder builder = new StringBuilder(_base64Hash.Length + _base64Salt.Length + 1);
