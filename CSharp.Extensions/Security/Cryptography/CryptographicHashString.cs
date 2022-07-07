@@ -15,7 +15,10 @@ public sealed class CryptographicHashString
     
     private readonly string _base64Hash;
     private readonly string _base64Salt;
+    private readonly HashAlgorithmName _hashAlgorithm;
     private readonly char _separator;
+    private readonly int _hashSize;
+    private readonly int _iterations;
 
     public CryptographicHashString(string origin, 
         char separator = DefaultSeparator, 
@@ -35,7 +38,10 @@ public sealed class CryptographicHashString
         
         _base64Hash = hash;
         _base64Salt = salt;
+        _hashAlgorithm = hashAlgorithm;
         _separator = separator;
+        _hashSize = hashSize;
+        _iterations = iterations;
     }
 
     public bool Equals(CryptographicHashString other)
@@ -71,7 +77,24 @@ public sealed class CryptographicHashString
     {
         return !Equals(left, right);
     }
+
+    public static bool operator &(string left, CryptographicHashString right)
+    {
+        return Compare(left, right);
+    }
     
+    public static bool operator &(CryptographicHashString left, string right)
+    {
+        return Compare(right, left);
+    }
+
+    public static bool Compare(string left, CryptographicHashString right)
+    {
+        byte[] salt = Convert.FromBase64String(right._base64Salt);
+        string hash = GetHash(left, salt, right._iterations, right._hashAlgorithm, right._hashSize);
+        return hash == right._base64Hash;
+    }
+
     private static (string, string) GetHash(string origin, int saltSize, int iterations, HashAlgorithmName hashAlgorithm, int cb)
     {
         Rfc2898DeriveBytes rfc = new(origin, saltSize, iterations, hashAlgorithm);
@@ -82,5 +105,16 @@ public sealed class CryptographicHashString
         rfc.Reset();
 
         return (base64Hash, base64Salt);
+    }
+    
+    private static string GetHash(string origin, byte[] salt, int iterations, HashAlgorithmName hashAlgorithm, int cb)
+    {
+        Rfc2898DeriveBytes rfc = new(origin, salt, iterations, hashAlgorithm);
+        
+        string base64Hash = Convert.ToBase64String(rfc.GetBytes(cb));
+        
+        rfc.Reset();
+
+        return base64Hash;
     }
 }
