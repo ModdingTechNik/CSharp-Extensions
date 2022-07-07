@@ -4,6 +4,7 @@ using System.Text;
 
 namespace CSharp.Extensions.Security.Cryptography;
 
+[SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
 public sealed class CryptographicHashString
 {
     private const int DefaultHashSize = 32;
@@ -37,7 +38,7 @@ public sealed class CryptographicHashString
         _separator = separator;
     }
 
-    private bool Equals(CryptographicHashString other)
+    public bool Equals(CryptographicHashString other)
     {
         return _base64Hash == other._base64Hash && _base64Salt == other._base64Salt && _separator == other._separator;
     }
@@ -52,16 +53,6 @@ public sealed class CryptographicHashString
         return HashCode.Combine(_base64Hash, _base64Salt, _separator);
     }
 
-    public static bool operator ==(CryptographicHashString? left, CryptographicHashString? right)
-    {
-        return Equals(left, right);
-    }
-
-    public static bool operator !=(CryptographicHashString? left, CryptographicHashString? right)
-    {
-        return !Equals(left, right);
-    }
-
     public override string ToString()
     {
         StringBuilder builder = new StringBuilder(_base64Hash.Length + _base64Salt.Length + 1);
@@ -71,6 +62,16 @@ public sealed class CryptographicHashString
         return builder.ToString();
     }
 
+    public static bool operator ==(CryptographicHashString? left, CryptographicHashString? right)
+    {
+        return Equals(left, right);
+    }
+
+    public static bool operator !=(CryptographicHashString? left, CryptographicHashString? right)
+    {
+        return !Equals(left, right);
+    }
+    
     private static (string, string) GetHash(string origin, int saltSize, int iterations, HashAlgorithmName hashAlgorithm, int cb)
     {
         Rfc2898DeriveBytes rfc = new(origin, saltSize, iterations, hashAlgorithm);
