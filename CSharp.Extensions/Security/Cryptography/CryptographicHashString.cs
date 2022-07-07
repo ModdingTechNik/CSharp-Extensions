@@ -6,11 +6,29 @@ namespace CSharp.Extensions.Security.Cryptography;
 
 public sealed class CryptographicHashString
 {
+    private const int DefaultHashSize = 32;
+    private const int DefaultSaltSize = 32;
+    private const int DefaultIterationsAmount = 2920;
+    private const char DefaultSeparator = '|';
+    private static readonly HashAlgorithmName DefaultHashAlgorithmName = HashAlgorithmName.SHA384;
+    
     private readonly string _base64Hash;
     private readonly string _base64Salt;
     private readonly char _separator;
 
-    public CryptographicHashString(string origin, char separator, int saltSize, int hashSize, int iterations, HashAlgorithmName hashAlgorithm)
+    public CryptographicHashString(string origin, 
+        char separator = DefaultSeparator, 
+        int saltSize = DefaultSaltSize, 
+        int hashSize = DefaultHashSize, 
+        int iterations = DefaultIterationsAmount) :
+        this(origin, DefaultHashAlgorithmName, separator, saltSize, hashSize, iterations) 
+    { }
+
+    public CryptographicHashString(string origin, HashAlgorithmName hashAlgorithm, 
+        char separator = DefaultSeparator, 
+        int saltSize = DefaultSaltSize, 
+        int hashSize = DefaultHashSize, 
+        int iterations = DefaultIterationsAmount)
     {
         (string hash, string salt) = GetHash(origin, saltSize, iterations, hashAlgorithm, hashSize);
         
