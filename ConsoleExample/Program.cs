@@ -8,10 +8,10 @@ internal static class Program
     private static void Main()
     {
         string str = Console.ReadLine() ?? "";
-        
-        CryptographicHashString hashString = new(str);
 
-        string dbStr = hashString.ToString();
+        CryptographicHashString hashString = str;
+
+        string dbStr = hashString;
         
         if (CryptographicHashString.TryParse(dbStr, out CryptographicHashString dbHashString))
         {

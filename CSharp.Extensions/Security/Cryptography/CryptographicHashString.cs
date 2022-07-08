@@ -77,6 +77,16 @@ public sealed class CryptographicHashString
         return !Equals(left, right);
     }
 
+    public static implicit operator CryptographicHashString(string origin)
+    {
+        return new CryptographicHashString(origin);
+    }
+
+    public static implicit operator string(CryptographicHashString hashString)
+    {
+        return hashString.ToString();
+    }
+
     public static bool TryParse(string str, out CryptographicHashString chs)
     {
         string[] base64Values = str.Split(Separator);
