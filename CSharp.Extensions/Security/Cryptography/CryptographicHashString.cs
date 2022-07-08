@@ -77,6 +77,16 @@ public sealed class CryptographicHashString
         return !Equals(left, right);
     }
 
+    public static bool operator &(string left, CryptographicHashString? right)
+    {
+        return Compare(left, right);
+    }
+    
+    public static bool operator &(CryptographicHashString? left, string right)
+    {
+        return Compare(right, left);
+    }
+
     public static implicit operator CryptographicHashString(string origin)
     {
         return new CryptographicHashString(origin);
@@ -101,7 +111,7 @@ public sealed class CryptographicHashString
         return true;
     }
 
-    public static bool Compare(string unparsedHashString, CryptographicHashString hashString)
+    public static bool Compare(string unparsedHashString, CryptographicHashString? hashString)
     {
         if (TryParse(unparsedHashString, out CryptographicHashString result))
         {

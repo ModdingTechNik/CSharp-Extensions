@@ -13,6 +13,7 @@ internal static class Program
 
         string dbStr = hashString;
         
-        Console.WriteLine(CryptographicHashString.Compare(dbStr, hashString));
+        Console.WriteLine(dbStr & hashString);
+        Console.WriteLine(hashString & dbStr);
     }
 }
