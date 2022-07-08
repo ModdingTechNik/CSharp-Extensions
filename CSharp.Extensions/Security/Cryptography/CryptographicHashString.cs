@@ -11,13 +11,13 @@ public sealed class CryptographicHashString
     private const int DefaultSaltSize = 32;
     private const int DefaultIterationsAmount = 2920;
     private const char Separator = '|';
-    private static readonly HashAlgorithmName DefaultHashAlgorithmName = HashAlgorithmName.SHA384;
+
+    public static readonly CryptographicHashString Empty = new("", "");
     
+    private static readonly HashAlgorithmName DefaultHashAlgorithmName = HashAlgorithmName.SHA384;
+
     private readonly string _base64Hash;
     private readonly string _base64Salt;
-    private readonly HashAlgorithmName _hashAlgorithm;
-    private readonly int _hashSize;
-    private readonly int _iterations;
 
     public CryptographicHashString(string origin,
         int saltSize = DefaultSaltSize, 
@@ -35,9 +35,12 @@ public sealed class CryptographicHashString
         
         _base64Hash = hash;
         _base64Salt = salt;
-        _hashAlgorithm = hashAlgorithm;
-        _hashSize = hashSize;
-        _iterations = iterations;
+    }
+
+    private CryptographicHashString(string base64Hash, string base64Salt)
+    {
+        _base64Hash = base64Hash;
+        _base64Salt = base64Salt;
     }
 
     public bool Equals(CryptographicHashString other)
@@ -74,21 +77,18 @@ public sealed class CryptographicHashString
         return !Equals(left, right);
     }
 
-    public static bool operator &(string left, CryptographicHashString right)
+    public static bool TryParse(string str, out CryptographicHashString chs)
     {
-        return Compare(left, right);
-    }
-    
-    public static bool operator &(CryptographicHashString left, string right)
-    {
-        return Compare(right, left);
-    }
+        string[] base64Values = str.Split(Separator);
+        
+        if (base64Values.Length < 2 || string.IsNullOrEmpty(base64Values[0]) || string.IsNullOrEmpty(base64Values[1]))
+        {
+            chs = Empty;
+            return false;
+        }
 
-    public static bool Compare(string left, CryptographicHashString right)
-    {
-        byte[] salt = Convert.FromBase64String(right._base64Salt);
-        string hash = GetHash(left, salt, right._iterations, right._hashAlgorithm, right._hashSize);
-        return hash == right._base64Hash;
+        chs = new CryptographicHashString(base64Values[0], base64Values[1]);
+        return true;
     }
 
     private static (string, string) GetHash(string origin, int saltSize, int iterations, HashAlgorithmName hashAlgorithm, int cb)
@@ -101,16 +101,5 @@ public sealed class CryptographicHashString
         rfc.Reset();
 
         return (base64Hash, base64Salt);
-    }
-    
-    private static string GetHash(string origin, byte[] salt, int iterations, HashAlgorithmName hashAlgorithm, int cb)
-    {
-        Rfc2898DeriveBytes rfc = new(origin, salt, iterations, hashAlgorithm);
-        
-        string base64Hash = Convert.ToBase64String(rfc.GetBytes(cb));
-        
-        rfc.Reset();
-
-        return base64Hash;
     }
 }

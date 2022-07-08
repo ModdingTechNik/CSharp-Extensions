@@ -10,9 +10,12 @@ internal static class Program
         string str = Console.ReadLine() ?? "";
         
         CryptographicHashString hashString = new(str);
+
+        string dbStr = hashString.ToString();
         
-        Console.WriteLine(hashString);
-        Console.WriteLine(str & hashString);
-        Console.WriteLine(hashString & str);
+        if (CryptographicHashString.TryParse(dbStr, out CryptographicHashString dbHashString))
+        {
+            Console.WriteLine(dbHashString == hashString);
+        }
     }
 }
