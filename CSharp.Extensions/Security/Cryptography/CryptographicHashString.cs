@@ -5,7 +5,7 @@ using System.Text;
 namespace CSharp.Extensions.Security.Cryptography;
 
 [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
-public sealed class CryptographicHashString
+public sealed class CryptographicHashString : IComparable, IComparable<CryptographicHashString>, IEquatable<CryptographicHashString>, ICloneable
 {
     private const int DefaultHashSize = 32;
     private const int DefaultSaltSize = 32;
@@ -43,16 +43,32 @@ public sealed class CryptographicHashString
         _base64Salt = base64Salt;
     }
 
-    public bool Equals(CryptographicHashString other)
+    public bool Equals(CryptographicHashString? other)
     {
+        if (other == null) return false;
         return _base64Hash == other._base64Hash && _base64Salt == other._base64Salt;
+    }
+
+    public int CompareTo(CryptographicHashString? other)
+    {
+        return Equals(this, other) ? 0 : 1;
     }
 
     public override bool Equals(object? obj)
     {
         return ReferenceEquals(this, obj) || obj is CryptographicHashString other && Equals(other);
     }
+    
+    public int CompareTo(object? obj)
+    {
+        return Equals(this, obj) ? 0 : 1;
+    }
 
+    public object Clone()
+    {
+        return new CryptographicHashString(_base64Hash, _base64Salt);
+    }
+    
     public override int GetHashCode()
     {
         return HashCode.Combine(_base64Hash, _base64Salt);
@@ -97,6 +113,16 @@ public sealed class CryptographicHashString
         return hashString.ToString();
     }
 
+    public static CryptographicHashString Parse(string str)
+    {
+        if (TryParse(str, out CryptographicHashString chs))
+        {
+            return chs;
+        }
+
+        throw new CryptographicHashStringParseException();
+    }
+    
     public static bool TryParse(string str, out CryptographicHashString chs)
     {
         string[] base64Values = str.Split(Separator);
