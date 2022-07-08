@@ -13,9 +13,6 @@ internal static class Program
 
         string dbStr = hashString;
         
-        if (CryptographicHashString.TryParse(dbStr, out CryptographicHashString dbHashString))
-        {
-            Console.WriteLine(dbHashString == hashString);
-        }
+        Console.WriteLine(CryptographicHashString.Compare(dbStr, hashString));
     }
 }

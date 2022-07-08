@@ -101,6 +101,16 @@ public sealed class CryptographicHashString
         return true;
     }
 
+    public static bool Compare(string unparsedHashString, CryptographicHashString hashString)
+    {
+        if (TryParse(unparsedHashString, out CryptographicHashString result))
+        {
+            return result == hashString;
+        }
+
+        return false;
+    }
+
     private static (string, string) GetHash(string origin, int saltSize, int iterations, HashAlgorithmName hashAlgorithm, int cb)
     {
         Rfc2898DeriveBytes rfc = new(origin, saltSize, iterations, hashAlgorithm);
