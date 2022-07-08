@@ -7,13 +7,17 @@ internal static class Program
 {
     private static void Main()
     {
-        string str = Console.ReadLine() ?? "";
-
-        CryptographicHashString hashString = str;
-
-        string dbStr = hashString;
+        // Example
         
-        Console.WriteLine(dbStr & hashString);
-        Console.WriteLine(hashString & dbStr);
+        string str = Console.ReadLine() ?? ""; // string entered by the user
+
+        CryptographicHashString hashString = str; // default hash
+
+        string dbStr = hashString; // default hash e.g. from a database
+        
+        Console.WriteLine(dbStr & hashString); // comparison output
+        Console.WriteLine(hashString & dbStr); // comparison output
+        
+        // analogue of dbStr & hashString is CryptographicHashString.Compare(dbStr, hashString);
     }
 }
