@@ -10,26 +10,23 @@ public sealed class CryptographicHashString
     private const int DefaultHashSize = 32;
     private const int DefaultSaltSize = 32;
     private const int DefaultIterationsAmount = 2920;
-    private const char DefaultSeparator = '|';
+    private const char Separator = '|';
     private static readonly HashAlgorithmName DefaultHashAlgorithmName = HashAlgorithmName.SHA384;
     
     private readonly string _base64Hash;
     private readonly string _base64Salt;
     private readonly HashAlgorithmName _hashAlgorithm;
-    private readonly char _separator;
     private readonly int _hashSize;
     private readonly int _iterations;
 
-    public CryptographicHashString(string origin, 
-        char separator = DefaultSeparator, 
+    public CryptographicHashString(string origin,
         int saltSize = DefaultSaltSize, 
         int hashSize = DefaultHashSize, 
         int iterations = DefaultIterationsAmount) :
-        this(origin, DefaultHashAlgorithmName, separator, saltSize, hashSize, iterations) 
+        this(origin, DefaultHashAlgorithmName, saltSize, hashSize, iterations) 
     { }
 
-    public CryptographicHashString(string origin, HashAlgorithmName hashAlgorithm, 
-        char separator = DefaultSeparator, 
+    public CryptographicHashString(string origin, HashAlgorithmName hashAlgorithm,
         int saltSize = DefaultSaltSize, 
         int hashSize = DefaultHashSize, 
         int iterations = DefaultIterationsAmount)
@@ -39,14 +36,13 @@ public sealed class CryptographicHashString
         _base64Hash = hash;
         _base64Salt = salt;
         _hashAlgorithm = hashAlgorithm;
-        _separator = separator;
         _hashSize = hashSize;
         _iterations = iterations;
     }
 
     public bool Equals(CryptographicHashString other)
     {
-        return _base64Hash == other._base64Hash && _base64Salt == other._base64Salt && _separator == other._separator;
+        return _base64Hash == other._base64Hash && _base64Salt == other._base64Salt;
     }
 
     public override bool Equals(object? obj)
@@ -56,14 +52,14 @@ public sealed class CryptographicHashString
 
     public override int GetHashCode()
     {
-        return HashCode.Combine(_base64Hash, _base64Salt, _separator);
+        return HashCode.Combine(_base64Hash, _base64Salt);
     }
 
     public override string ToString()
     {
         StringBuilder builder = new StringBuilder(_base64Hash.Length + _base64Salt.Length + 1);
         builder.Append(_base64Hash);
-        builder.Append(_separator);
+        builder.Append(Separator);
         builder.Append(_base64Salt);
         return builder.ToString();
     }
